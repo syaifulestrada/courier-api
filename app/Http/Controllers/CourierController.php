@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCourierRequest;
+use App\Http\Requests\UpdateCourierRequest;
 use App\Models\Courier;
 use Illuminate\Http\Request;
 
@@ -61,9 +62,15 @@ class CourierController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCourierRequest $request, string $id)
     {
-        //
+        $courier = Courier::findOrFail($id);
+        $courier->update($request->validated());
+
+        return response()->json([
+            'message' => 'Data updated successfully',
+            'data' => $courier,
+        ]);
     }
 
     /**
