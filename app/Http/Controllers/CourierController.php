@@ -46,7 +46,7 @@ class CourierController extends Controller
         return response()->json([
             'message' => 'Data successfully created',
             'data' => $courier,
-        ]);
+        ], 201);
     }
 
     /**
