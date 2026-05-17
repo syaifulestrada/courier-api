@@ -47,7 +47,9 @@ class CourierController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $courier = Courier::findOrFail($id);
+
+        return response()->json($courier);
     }
 
     /**
