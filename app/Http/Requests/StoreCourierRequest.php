@@ -25,7 +25,7 @@ class StoreCourierRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:couriers,email',
-            'phone' => 'required|string|max:13',
+            'phone' => 'required|string|max:13|unique:couriers,phone',
             'level' => 'required|integer|between:1,5',
             'address' => 'required|string',
             'is_active' => 'required|boolean',

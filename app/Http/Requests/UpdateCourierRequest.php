@@ -26,7 +26,7 @@ class UpdateCourierRequest extends FormRequest
         return [
             'name' => 'sometimes|string|max:255',
             'email' => ['sometimes', 'email', Rule::unique('couriers', 'email')->ignore($this->courier)],
-            'phone' => 'sometimes|string|max:13',
+            'phone' => ['sometimes', 'string', 'max:13', Rule::unique('couriers', 'phone')->ignore($this->courier)],
             'level' => 'sometimes|integer|between:1,5',
             'address' => 'sometimes|string',
             'is_active' => 'sometimes|boolean',
