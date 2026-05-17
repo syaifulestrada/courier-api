@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Models;
+
+use Database\Factories\CourierFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+#[Fillable(['name', 'email', 'phone', 'level',  'address', 'is_active'])]
+class Courier extends Model
+{
+    /** @use HasFactory<CourierFactory> */
+    use HasFactory;
+}
