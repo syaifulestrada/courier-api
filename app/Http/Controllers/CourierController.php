@@ -17,8 +17,15 @@ class CourierController extends Controller
 
         $sortBy = in_array($request->query('sort'), $allowedSort) ? $request->query('sort') : 'name';
         $orderBy = $request->query('order') === 'desc' ? 'desc' : 'asc';
+        $search = $request->query('search');
 
         $couriers = Courier::query()
+            ->when($search, function ($query, $search) {
+                $words = explode(' ', trim($search));
+                foreach ($words as $word) {
+                    $query->where('name', 'like', "%$word%");
+                }
+            })
             ->orderBy($sortBy, $orderBy)
             ->paginate(10);
 
