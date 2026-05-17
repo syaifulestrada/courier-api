@@ -78,6 +78,10 @@ class CourierController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Courier::findOrFail($id)->delete();
+
+        return response()->json([
+            'message' => 'Data deleted successfully',
+        ]);
     }
 }
