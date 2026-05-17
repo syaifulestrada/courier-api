@@ -10,9 +10,17 @@ class CourierController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $couriers = Courier::orderBy('name')->paginate(10);
+
+        $allowedSort = ['name', 'registered_at'];
+
+        $sortBy = in_array($request->query('sort'), $allowedSort) ? $request->query('sort') : 'name';
+        $orderBy = $request->query('order') === 'desc' ? 'desc' : 'asc';
+
+        $couriers = Courier::query()
+            ->orderBy($sortBy, $orderBy)
+            ->paginate(10);
 
         return response()->json($couriers);
     }
