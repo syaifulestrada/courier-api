@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCourierRequest;
 use App\Models\Courier;
 use Illuminate\Http\Request;
 
@@ -37,9 +38,14 @@ class CourierController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCourierRequest $request)
     {
-        //
+        $courier = Courier::create($request->validated());
+
+        return response()->json([
+            'message' => 'Data successfully created',
+            'data' => $courier,
+        ]);
     }
 
     /**
