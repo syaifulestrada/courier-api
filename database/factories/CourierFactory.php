@@ -18,7 +18,12 @@ class CourierFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->name(),
+            'email' => fake()->safeEmail(),
+            'phone' => fake()->phoneNumber(),
+            'level' => random_int(1, 5),
+            'address' => fake()->address(),
+            'is_active' => (bool) random_int(0, 1),
         ];
     }
 }
