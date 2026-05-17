@@ -24,6 +24,7 @@ class CourierFactory extends Factory
             'level' => random_int(1, 5),
             'address' => fake()->address(),
             'is_active' => (bool) random_int(0, 1),
+            'registered_at' => now(),
         ];
     }
 }
