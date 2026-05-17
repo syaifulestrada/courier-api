@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['name', 'email', 'phone', 'level',  'address', 'is_active'])]
+#[Fillable(['name', 'email', 'phone', 'level',  'address', 'is_active', 'registered_at'])]
 class Courier extends Model
 {
     /** @use HasFactory<CourierFactory> */
