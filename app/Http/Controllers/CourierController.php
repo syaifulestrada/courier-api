@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Courier;
 use Illuminate\Http\Request;
 
 class CourierController extends Controller
@@ -11,7 +12,9 @@ class CourierController extends Controller
      */
     public function index()
     {
-        //
+        $couriers = Courier::orderBy('name')->paginate(10);
+
+        return response()->json($couriers);
     }
 
     /**
