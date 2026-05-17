@@ -18,7 +18,7 @@ class CourierController extends Controller
         $sortBy = in_array($request->query('sort'), $allowedSort) ? $request->query('sort') : 'name';
         $orderBy = $request->query('order') === 'desc' ? 'desc' : 'asc';
         $search = $request->query('search');
-        $filterByLevel = $request->filled('level') ? array_filter(explode(',', $request->query('level')), 'is_numeric') : null;
+        $levels = $request->filled('level') ? array_filter(explode(',', $request->query('level')), 'is_numeric') : null;
 
         $couriers = Courier::query()
             ->when($search, function ($query, $search) {
@@ -27,7 +27,7 @@ class CourierController extends Controller
                     $query->where('name', 'like', "%$word%");
                 }
             })
-            ->when($filterByLevel, fn ($query) => $query->whereIn('level', $filterByLevel))
+            ->when($levels, fn ($query) => $query->whereIn('level', $levels))
             ->orderBy($sortBy, $orderBy)
             ->paginate(10);
 
