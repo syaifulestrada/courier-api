@@ -1,58 +1,270 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+    # Courier API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A RESTful API for managing courier master data, built with Laravel 13.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requirements
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP >= 8.3
+- Composer
+- MySQL
+- Laravel 13
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. **Clone the repository**
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    ```bash
+    git clone https://github.com/username/courier-api.git
+    cd courier-api
+    ```
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+2. **Install dependencies**
 
-## Agentic Development
+    ```bash
+    composer install
+    ```
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+3. **Copy environment file**
 
-```bash
-composer require laravel/boost --dev
+    ```bash
+    cp .env.example .env
+    ```
 
-php artisan boost:install
+4. **Generate application key**
+
+    ```bash
+    php artisan key:generate
+    ```
+
+5. **Configure database in `.env`**
+
+    ```env
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=courier_api
+    DB_USERNAME=root
+    DB_PASSWORD=
+    ```
+
+6. **Run migrations and seeders**
+
+    ```bash
+    php artisan migrate --seed
+    ```
+
+7. **Start the development server**
+    ```bash
+    php artisan serve
+    ```
+
+---
+
+## API Endpoints
+
+Base URL: `http://localhost:8000/api`
+
+| Method    | Endpoint         | Description          |
+| --------- | ---------------- | -------------------- |
+| GET       | `/couriers`      | List all couriers    |
+| POST      | `/couriers`      | Create a new courier |
+| GET       | `/couriers/{id}` | Get courier detail   |
+| PUT/PATCH | `/couriers/{id}` | Update a courier     |
+| DELETE    | `/couriers/{id}` | Delete a courier     |
+
+---
+
+## Query Parameters
+
+Available for `GET /couriers`:
+
+| Parameter | Example               | Description                                             |
+| --------- | --------------------- | ------------------------------------------------------- |
+| `search`  | `?search=budi+agung`  | Search by name (supports partial match per word)        |
+| `sort`    | `?sort=registered_at` | Sort field (`name` or `registered_at`). Default: `name` |
+| `order`   | `?order=desc`         | Sort direction (`asc` or `desc`). Default: `asc`        |
+| `level`   | `?level=2,3`          | Filter by courier level (1–5, comma-separated)          |
+
+**Example:**
+
+```
+GET /api/couriers?search=budi+agung&sort=registered_at&order=desc&level=2,3
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+**Response:**
 
-## Contributing
+```
+{
+    "current_page": 1,
+    "data": [
+        {
+            "id": 201,
+            "name": "Budiono Hadi Agung",
+            "email": "budionohadiagung@gmail.com",
+            "phone": "081231313212",
+            "level": 2,
+            "address": "Jl. Ahmad Yani Surabaya",
+            "is_active": 1,
+            "registered_at": "2026-05-18",
+            "created_at": "2026-05-17T23:38:51.000000Z",
+            "updated_at": "2026-05-17T23:38:51.000000Z"
+        }
+    ],
+    "first_page_url": "http://courier-api.test/api/couriers?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "http://courier-api.test/api/couriers?page=1",
+    "links": [
+        {
+            "url": null,
+            "label": "&laquo; Previous",
+            "page": null,
+            "active": false
+        },
+        {
+            "url": "http://courier-api.test/api/couriers?page=1",
+            "label": "1",
+            "page": 1,
+            "active": true
+        },
+        {
+            "url": null,
+            "label": "Next &raquo;",
+            "page": null,
+            "active": false
+        }
+    ],
+    "next_page_url": null,
+    "path": "http://courier-api.test/api/couriers",
+    "per_page": 10,
+    "prev_page_url": null,
+    "to": 1,
+    "total": 1
+}
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Request Body
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### POST `/couriers` — Create Courier
 
-## Security Vulnerabilities
+| Field           | Type    | Rules                              |
+| --------------- | ------- | ---------------------------------- |
+| `name`          | string  | required, max 255                  |
+| `email`         | string  | required, valid email, unique      |
+| `phone`         | string  | required, max 13, unique           |
+| `level`         | integer | required, between 1–5              |
+| `address`       | string  | required                           |
+| `is_active`     | boolean | required                           |
+| `registered_at` | date    | required, before or equal to today |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Example:**
 
-## License
+```
+POST /api/couriers
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Payload**
+
+```
+{
+    name: "Agus",
+    email: "agus123@gmail.com",
+    phone: "08213164578",
+    level: 1,
+    address: "Jl. Mawar Melati 112",
+    is_active: 1,
+    registered_at: 2026-05-18
+}
+```
+
+**Response:**
+
+```
+{
+    "message": "Data successfully created",
+    "data": {
+        "name": "Agus",
+        "email": "agus123@gmail.com",
+        "phone": "08213164578",
+        "level": "1",
+        "address": "Jl. Mawar Melati 112",
+        "is_active": "1",
+        "registered_at": "2026-05-18",
+        "updated_at": "2026-05-18T01:11:32.000000Z",
+        "created_at": "2026-05-18T01:11:32.000000Z",
+        "id": 204
+    }
+}
+```
+
+### PUT/PATCH `/couriers/{id}` — Update Courier
+
+All fields are optional (`sometimes`). Same rules apply as above, with unique fields ignoring the current courier.
+
+**Example**
+
+```
+PUT /couries/204
+```
+
+**Payload**
+
+```
+name: "Agus Hariyadi"
+```
+
+**Response**
+
+```
+{
+    "message": "Data updated successfully",
+    "data": {
+        "id": 204,
+        "name": "Agus Hariyadi",
+        "email": "agus123@gmail.com",
+        "phone": "08213164578",
+        "level": 1,
+        "address": "Jl. Mawar Melati 112",
+        "is_active": 1,
+        "registered_at": "2026-05-18",
+        "created_at": "2026-05-18T01:11:32.000000Z",
+        "updated_at": "2026-05-18T01:13:18.000000Z"
+    }
+}
+```
+
+### DELETE `/couriers/{id}` — Update Courier
+
+**Example**
+
+```
+DELETE /couriers/204
+```
+
+**Response**
+
+```
+{
+    "message": "Data deleted successfully"
+}
+```
+
+## Running Tests
+
+```bash
+./vendor/bin/pest
+```
+
+Test coverage includes:
+
+- `GET /couriers` — list with pagination
+- `POST /couriers` — create, duplicate email, duplicate phone
+- `GET /couriers/{id}` — show, not found
+- `PUT /couriers/{id}` — update, not found, duplicate email, duplicate phone
+- `DELETE /couriers/{id}` — delete, not found
