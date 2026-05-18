@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCourierRequest;
 use App\Http\Requests\UpdateCourierRequest;
 use App\Models\Courier;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CourierController extends Controller
 {
@@ -14,26 +16,33 @@ class CourierController extends Controller
      */
     public function index(Request $request)
     {
+        try {
+            $allowedSort = ['name', 'registered_at'];
 
-        $allowedSort = ['name', 'registered_at'];
+            $sortBy = in_array($request->query('sort'), $allowedSort) ? $request->query('sort') : 'name';
+            $orderBy = $request->query('order') === 'desc' ? 'desc' : 'asc';
+            $search = $request->query('search');
+            $levels = $request->filled('level') ? array_filter(explode(',', $request->query('level')), 'is_numeric') : null;
 
-        $sortBy = in_array($request->query('sort'), $allowedSort) ? $request->query('sort') : 'name';
-        $orderBy = $request->query('order') === 'desc' ? 'desc' : 'asc';
-        $search = $request->query('search');
-        $levels = $request->filled('level') ? array_filter(explode(',', $request->query('level')), 'is_numeric') : null;
+            $couriers = Courier::query()
+                ->when($search, function ($query, $search) {
+                    $words = explode(' ', trim($search));
+                    foreach ($words as $word) {
+                        $query->where('name', 'like', "%$word%");
+                    }
+                })
+                ->when($levels, fn ($query) => $query->whereIn('level', $levels))
+                ->orderBy($sortBy, $orderBy)
+                ->paginate(10);
 
-        $couriers = Courier::query()
-            ->when($search, function ($query, $search) {
-                $words = explode(' ', trim($search));
-                foreach ($words as $word) {
-                    $query->where('name', 'like', "%$word%");
-                }
-            })
-            ->when($levels, fn ($query) => $query->whereIn('level', $levels))
-            ->orderBy($sortBy, $orderBy)
-            ->paginate(10);
+            return response()->json($couriers);
+        } catch (\Exception $e) {
+            Log::error(['error' => $e->getMessage(), 'traces' => $e->getTraceAsString()]);
 
-        return response()->json($couriers);
+            return response()->json([
+                'message' => 'Internal server error',
+            ], 500);
+        }
     }
 
     /**
@@ -41,12 +50,20 @@ class CourierController extends Controller
      */
     public function store(StoreCourierRequest $request)
     {
-        $courier = Courier::create($request->validated());
+        try {
+            $courier = Courier::create($request->validated());
 
-        return response()->json([
-            'message' => 'Data successfully created',
-            'data' => $courier,
-        ], 201);
+            return response()->json([
+                'message' => 'Data successfully created',
+                'data' => $courier,
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error(['error' => $e->getMessage(), 'traces' => $e->getTraceAsString()]);
+
+            return response()->json([
+                'message' => 'Internal server error',
+            ], 500);
+        }
     }
 
     /**
@@ -54,9 +71,21 @@ class CourierController extends Controller
      */
     public function show(string $id)
     {
-        $courier = Courier::findOrFail($id);
+        try {
+            $courier = Courier::findOrFail($id);
 
-        return response()->json($courier);
+            return response()->json($courier);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error(['error' => $e->getMessage(), 'traces' => $e->getTraceAsString()]);
+
+            return response()->json([
+                'message' => 'Internal server error',
+            ], 500);
+        }
     }
 
     /**
@@ -64,13 +93,25 @@ class CourierController extends Controller
      */
     public function update(UpdateCourierRequest $request, string $id)
     {
-        $courier = Courier::findOrFail($id);
-        $courier->update($request->validated());
+        try {
+            $courier = Courier::findOrFail($id);
+            $courier->update($request->validated());
 
-        return response()->json([
-            'message' => 'Data updated successfully',
-            'data' => $courier,
-        ]);
+            return response()->json([
+                'message' => 'Data updated successfully',
+                'data' => $courier,
+            ]);
+        } catch (ModelNotFoundException) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error(['error' => $e->getMessage(), 'traces' => $e->getTraceAsString()]);
+
+            return response()->json([
+                'message' => 'Internal server error',
+            ], 500);
+        }
     }
 
     /**
@@ -78,10 +119,22 @@ class CourierController extends Controller
      */
     public function destroy(string $id)
     {
-        Courier::findOrFail($id)->delete();
+        try {
+            Courier::findOrFail($id)->delete();
 
-        return response()->json([
-            'message' => 'Data deleted successfully',
-        ]);
+            return response()->json([
+                'message' => 'Data deleted successfully',
+            ]);
+        } catch (ModelNotFoundException) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error(['error' => $e->getMessage(), 'traces' => $e->getTraceAsString()]);
+
+            return response()->json([
+                'message' => 'Internal server error',
+            ], 500);
+        }
     }
 }
